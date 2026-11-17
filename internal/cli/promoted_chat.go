@@ -1,0 +1,52 @@
+// Copyright 2026 boris-korol. Licensed under Apache-2.0. See LICENSE.
+
+package cli
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
+)
+
+func newChatPromotedCmd(flags *rootFlags) *cobra.Command {
+
+	cmd := &cobra.Command{
+		Use:         "chat",
+		Short:       "Get remaining account credits",
+		Long:        "Shortcut for 'chat credit'. Get remaining account credits",
+		Example:     "  kie-cli chat",
+		Annotations: map[string]string{"pp:endpoint": "chat.credit", "pp:method": "GET", "pp:path": "/api/v1/chat/credit", "mcp:read-only": "true"},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, err := flags.newClient()
+			if err != nil {
+				return err
+			}
+
+			path := "/api/v1/chat/credit"
+			params := map[string]string{}
+			data, err := c.Get(path, params)
+			if err != nil {
+				return classifyAPIError(err, flags)
+			}
+			if wantsHumanTable(cmd.OutOrStdout(), flags) {
+				var items []map[string]any
+				if json.Unmarshal(data, &items) == nil && len(items) > 0 {
+					if err := printAutoTable(cmd.OutOrStdout(), items); err != nil {
+						return err
+					}
+					if len(items) >= 25 {
+						fmt.Fprintf(os.Stderr, "\nShowing %d results. To narrow: add --limit, --json --select, or filter flags.\n", len(items))
+					}
+					return nil
+				}
+			}
+			return printOutputWithFlags(cmd.OutOrStdout(), data, flags)
+		},
+	}
+
+	// Wire sibling endpoints and sub-resources as subcommands
+
+	return cmd
+}

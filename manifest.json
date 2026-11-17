@@ -1,0 +1,40 @@
+{
+  "manifest_version": "0.3",
+  "name": "kie-mcp",
+  "display_name": "KIE",
+  "version": "1.0.0",
+  "description": "KIE.ai image and video generation jobs as MCP tools.",
+  "author": {
+    "name": "Boris Korol",
+    "url": "https://github.com/BKproduct"
+  },
+  "license": "Apache-2.0",
+  "server": {
+    "type": "binary",
+    "entry_point": "bin/kie-mcp",
+    "mcp_config": {
+      "command": "${__dirname}/bin/kie-mcp",
+      "args": [],
+      "env": {
+        "KIE_BEARER_AUTH": "${user_config.kie_bearer_auth}"
+      }
+    }
+  },
+  "user_config": {
+    "kie_bearer_auth": {
+      "type": "string",
+      "title": "KIE_BEARER_AUTH",
+      "description": "Sets KIE_BEARER_AUTH for the KIE MCP server. Get a credential from https://kie.ai/api-key.",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=1.0.0",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ]
+  }
+}

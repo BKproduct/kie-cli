@@ -1,0 +1,24 @@
+# Secrets & local config — never commit
+.env
+.env.*
+*.pem
+config.toml
+.config/
+
+# Build artifacts
+/build/
+/dist/
+*.mcpb
+/kie-cli
+/kie-mcp
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Run artifacts (may contain HAR/tokens)
+*.har
+
+# Feedback may contain user notes with pasted keys
+feedback.jsonl

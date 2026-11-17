@@ -1,0 +1,136 @@
+openapi: 3.0.3
+info:
+  title: KIE.ai API
+  version: 1.0.0
+  description: |
+    Unified job API for KIE.ai market models (image/video generation).
+    Bearer token from https://kie.ai/api-key — env KIE_API_KEY.
+servers:
+  - url: https://api.kie.ai
+security:
+  - bearerAuth: []
+paths:
+  /api/v1/jobs/createTask:
+    post:
+      operationId: jobsCreateTask
+      summary: Create async generation task
+      tags: [jobs]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+      responses:
+        '200':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTaskResponse'
+  /api/v1/jobs/recordInfo:
+    get:
+      operationId: jobsRecordInfo
+      summary: Get task status and result
+      tags: [jobs]
+      parameters:
+        - name: taskId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordInfoResponse'
+  /api/v1/chat/credit:
+    get:
+      operationId: chatCredit
+      summary: Get remaining account credits
+      tags: [chat]
+      responses:
+        '200':
+          description: Credit balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+  /api/v1/common/download-url:
+    post:
+      operationId: commonDownloadUrl
+      summary: Get temporary download URL for generated file
+      tags: [common]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties:
+                url:
+                  type: string
+      responses:
+        '200':
+          description: Download URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadUrlResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    CreateTaskRequest:
+      type: object
+      required: [model, input]
+      properties:
+        model:
+          type: string
+          description: Market model id e.g. nano-banana-pro, sora-2-text-to-video
+        input:
+          type: object
+          additionalProperties: true
+    CreateTaskResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          type: object
+          properties:
+            taskId:
+              type: string
+    RecordInfoResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            state:
+              type: string
+            resultJson:
+              type: string
+    CreditResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        data:
+          type: number
+    DownloadUrlResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        data:
+          type: object
